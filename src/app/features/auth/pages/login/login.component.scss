@@ -1,0 +1,151 @@
+// src/app/features/auth/pages/login/login.component.scss
+// Variables
+$primary-color: #3f51b5;
+$card-width: 450px;
+
+// Contenedor principal - ocupa toda la pantalla
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+// Tarjeta de login
+.login-card {
+  width: 100%;
+  max-width: $card-width;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+// Encabezado con logo centrado
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 1.5rem 0;
+  
+  h1 {
+    margin: 10px 0 0;
+    color: $primary-color;
+    font-size: 24px;
+    font-weight: 500;
+  }
+  
+  .subtitle {
+    margin: 5px 0 0;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 16px;
+  }
+}
+
+// Logo centrado
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: rgba($primary-color, 0.1);
+  
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+  }
+}
+
+// Formulario
+.login-form {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem;
+}
+
+// Campo de formulario a ancho completo
+.form-field {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+// Botón de inicio de sesión
+.login-button {
+  height: 48px;
+  margin-top: 1rem;
+  border-radius: 24px;
+  font-size: 16px;
+  
+  // Para centrar el spinner y texto
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Sección de usuarios de prueba
+.test-users {
+  margin-top: 2rem;
+  padding: 0 1.5rem;
+  
+  h3 {
+    color: $primary-color;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+}
+
+.test-user-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.test-user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: rgba($primary-color, 0.05);
+  
+  .test-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    
+    strong {
+      color: $primary-color;
+    }
+  }
+}
+
+// Acciones de la tarjeta (enlaces)
+.login-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem 1.5rem;
+}
+
+// Estilos responsivos
+@media (max-width: 480px) {
+  .login-card {
+    box-shadow: none;
+    border-radius: 0;
+  }
+  
+  .login-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .test-user-list {
+    grid-template-columns: 1fr;
+  }
+}
