@@ -1,0 +1,314 @@
+<div class="config-container">
+  <div class="page-header">
+    <button class="back-button" mat-icon-button color="primary" routerLink="/dashboard"
+      matTooltip="Volver al Dashboard">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Configuración de Sincronización</h1>
+    <p class="subtitle">Configure los parámetros para sincronizar con la base de datos de su biblioteca.</p>
+  </div>
+
+  <!-- Panel de pruebas - Solo visible en desarrollo -->
+  <div class="test-panel" *ngIf="esModoDesarrollo">
+    <div class="test-header">
+      <h4>Panel de pruebas</h4>
+      <p>Seleccione un perfil de usuario para simular diferentes escenarios</p>
+    </div>
+    <div class="test-buttons">
+      <button mat-stroked-button color="primary" (click)="cambiarPerfilUsuario('simple')">
+        <mat-icon>person</mat-icon>
+        Usuario (Una Filial)
+      </button>
+      <button mat-stroked-button color="accent" (click)="cambiarPerfilUsuario('multiple')">
+        <mat-icon>people</mat-icon>
+        Usuario (Múltiples Filiales)
+      </button>
+      <button mat-stroked-button color="warn" (click)="cambiarPerfilUsuario('admin')">
+        <mat-icon>admin_panel_settings</mat-icon>
+        Administrador
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje para usuarios con múltiples filiales -->
+  <div class="multi-filial-message" *ngIf="tieneMultiplesFiliales">
+    <mat-icon class="multi-icon">account_balance</mat-icon>
+    <div class="multi-text">
+      <h3>Múltiples bibliotecas detectadas</h3>
+      <p>Se ha detectado que tiene acceso a más de una biblioteca. Por favor, seleccione la biblioteca con la que desea
+        trabajar en este momento.</p>
+    </div>
+  </div>
+
+  <form [formGroup]="configuracionForm" (ngSubmit)="guardarConfiguracion()">
+    <div class="form-section">
+      <h2>Selección de Institución y Filial</h2>
+
+      <!-- Selección de Institución -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Institución</mat-label>
+        <mat-select formControlName="institucionId">
+          <mat-option *ngFor="let institucion of instituciones" [value]="institucion.id">
+            {{ institucion.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="configuracionForm.get('institucionId')?.hasError('required')">
+          Por favor seleccione una institución
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Selección de Filial -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Filial/Biblioteca</mat-label>
+        <mat-select formControlName="filialId" [disabled]="!configuracionForm.get('institucionId')?.value">
+          <mat-option *ngFor="let filial of filialesFiltradas" [value]="filial.id">
+            {{ filial.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="configuracionForm.get('filialId')?.hasError('required')">
+          Por favor seleccione una filial
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Mensaje informativo sobre el tipo de conexión -->
+      <div class="info-box" *ngIf="configuracionForm.get('filialId')?.value">
+        <!-- Contenido existente -->
+      </div>
+    </div>
+
+    <!-- Sección para selección de archivo Firebird -->
+    <div class="form-section" *ngIf="esConexionLocal()">
+      <h2>Selección de Archivo de Base de Datos Firebird</h2>
+
+      <mat-card class="file-selection-card">
+        <mat-card-content>
+          <div class="file-upload-container">
+            <!-- Contenedor para botón y nombre de archivo -->
+            <div class="file-selection-wrapper">
+              <!-- Botón de selección de archivo -->
+              <button mat-raised-button color="primary" (click)="fileInput.click()" class="select-file-button">
+                <mat-icon>attach_file</mat-icon>
+                Seleccionar Archivo .gdb
+              </button>
+
+              <!-- Mostrar nombre de archivo seleccionado -->
+              <span class="selected-file-name" *ngIf="archivoSeleccionado">
+                {{ archivoSeleccionado.name }}
+              </span>
+            </div>
+
+            <!-- Input oculto para selección de archivo -->
+            <input hidden type="file" #fileInput accept=".gdb" (change)="seleccionarArchivo($event)">
+
+            <!-- Detalles del archivo si está seleccionado -->
+            <div *ngIf="archivoSeleccionado" class="file-details">
+              <p class="file-size">
+                Tamaño: {{ (archivoSeleccionado.size / 1024 / 1024).toFixed(2) }} MB
+              </p>
+              <button mat-icon-button color="warn" (click)="archivoSeleccionado = null" matTooltip="Eliminar archivo">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Sección para seleccionar archivo en caso de biblioteca externa -->
+    <div class="form-section" *ngIf="esConexionLocal() && esBibliotecaExterna()">
+      <h2>Selección de archivo de base de datos</h2>
+
+      <mat-card class="file-selection-card">
+        <mat-card-content>
+          <div class="file-upload-container">
+            <div class="file-upload-box" (click)="fileInput.click()" [class.has-file]="archivoSeleccionado">
+              <div *ngIf="!archivoSeleccionado" class="upload-prompt">
+                <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                <p class="upload-text">Haga clic para seleccionar el archivo de base de datos</p>
+                <p class="upload-hint">Archivos .fdb, .gdb, .sqlite o .db</p>
+              </div>
+              <div *ngIf="archivoSeleccionado" class="file-details">
+                <mat-icon class="file-icon">insert_drive_file</mat-icon>
+                <div class="file-info">
+                  <p class="file-name">{{ archivoSeleccionado.name }}</p>
+                  <p class="file-size">{{ (archivoSeleccionado.size / 1024 / 1024).toFixed(2) }} MB</p>
+                </div>
+                <button mat-icon-button color="warn" (click)="$event.stopPropagation(); archivoSeleccionado = null;"
+                  matTooltip="Eliminar archivo">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            <input hidden type="file" #fileInput accept=".gdb,.fdb,.sqlite,.db" (change)="seleccionarArchivo($event)">
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Solo mostrar la sección de parámetros de conexión si: 
+         1. Es una conexión local (todos los usuarios pueden configurarla) O
+         2. Es usuario administrador (puede ver parámetros de cualquier conexión) -->
+    <div class="form-section" *ngIf="esConexionLocal() || esAdmin">
+      <h2>Parámetros de Conexión</h2>
+
+      <!-- Tipo de base de datos -->
+      <mat-form-field appearance="outline" class="full-width" *ngIf="esConexionLocal()">
+        <mat-label>Tipo de Base de Datos</mat-label>
+        <mat-select formControlName="tipoBaseDatos">
+          <mat-option value="firebird">Firebird</mat-option>
+          <mat-option value="sqlite">SQLite</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Configuración de Servidor -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Servidor</mat-label>
+        <input matInput formControlName="servidor" placeholder="Ej: localhost o sdb02">
+        <mat-hint>Dirección del servidor de la base de datos</mat-hint>
+        <mat-error *ngIf="configuracionForm.get('servidor')?.hasError('required')">
+          El servidor es requerido
+        </mat-error>
+        <mat-error *ngIf="configuracionForm.get('servidor')?.hasError('minlength')">
+          Mínimo 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Credenciales de Acceso -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Usuario</mat-label>
+          <input matInput formControlName="usuario" placeholder="Ej: SYSDBA">
+          <mat-error *ngIf="configuracionForm.get('usuario')?.hasError('required')">
+            El usuario es requerido
+          </mat-error>
+          <mat-error *ngIf="configuracionForm.get('usuario')?.hasError('minlength')">
+            Mínimo 3 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="contrasena" type="password" placeholder="Contraseña">
+          <mat-error *ngIf="configuracionForm.get('contrasena')?.hasError('required')">
+            La contraseña es requerida
+          </mat-error>
+          <mat-error *ngIf="configuracionForm.get('contrasena')?.hasError('minlength')">
+            Mínimo 4 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+<!-- Ruta de Base de Datos (código existente) -->
+<mat-form-field appearance="outline" class="full-width" *ngIf="!esBibliotecaExterna()">
+  <mat-label>Ruta de Base de Datos</mat-label>
+  <input matInput formControlName="rutaBaseDatos" placeholder="Ej: /ruta/a/basedatos.fdb">
+  <mat-hint>Ruta completa al archivo de base de datos</mat-hint>
+  <mat-error *ngIf="configuracionForm.get('rutaBaseDatos')?.hasError('required')">
+    La ruta de la base de datos es requerida
+  </mat-error>
+</mat-form-field>
+
+<!-- Nuevo bloque de selección de archivo Firebird -->
+<div class="form-section firebird-file-selection" *ngIf="esConexionLocal()">
+  <h3>Selección de Archivo Firebird</h3>
+  
+  <mat-card class="file-selection-card">
+    <mat-card-content>
+      <div class="file-upload-container">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="seleccionarArchivoFirebird()"
+          class="select-firebird-file-btn"
+        >
+          <mat-icon>folder_open</mat-icon>
+          Seleccionar Archivo .gdb Firebird 2.5
+        </button>
+
+        <!-- Detalles de archivo seleccionado -->
+        <div *ngIf="archivoSeleccionado" class="file-details">
+          <mat-icon>insert_drive_file</mat-icon>
+          <div class="file-info">
+            <p class="file-name">{{ archivoSeleccionado.name }}</p>
+            <p class="file-size">
+              {{ (archivoSeleccionado.size / 1024 / 1024).toFixed(2) }} MB
+            </p>
+          </div>
+          <button 
+            mat-icon-button 
+            color="warn" 
+            (click)="limpiarArchivoSeleccionado()"
+            matTooltip="Eliminar archivo"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Resto del código existente -->
+
+      <!-- Selección de archivo para conexión local no externa -->
+      <div class="file-input-section" *ngIf="esConexionLocal() && !esBibliotecaExterna()">
+        <p class="input-label">Seleccionar archivo de base de datos local:</p>
+        <div class="file-input-container">
+          <button type="button" mat-stroked-button color="primary" (click)="fileInput2.click()">
+            <mat-icon>attach_file</mat-icon>
+            Seleccionar Archivo
+          </button>
+          <span class="selected-file" *ngIf="archivoSeleccionado">
+            {{ archivoSeleccionado.name }}
+          </span>
+          <input hidden type="file" accept=".gdb,.fdb,.sqlite,.db" #fileInput2 (change)="seleccionarArchivo($event)">
+        </div>
+        <p class="hint-text">
+          Seleccione un archivo de base de datos (Firebird: .fdb, .gdb | SQLite: .sqlite, .db)
+        </p>
+      </div>
+    </div>
+
+    <!-- Para usuarios no administradores con conexión preconfigurada, mostrar nota -->
+    <div class="form-section" *ngIf="esConexionPreconfigurada()">
+      <div class="admin-notice">
+        <mat-icon class="notice-icon">lock</mat-icon>
+        <div class="notice-text">
+          Los parámetros de conexión para esta biblioteca solo son visibles para administradores.
+          La configuración está preestablecida para garantizar una conexión segura.
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acciones -->
+    <div class="form-actions">
+      <div class="left-actions">
+        <button type="button" mat-raised-button routerLink="/dashboard">
+          <mat-icon>arrow_back</mat-icon>
+          Volver al Dashboard
+        </button>
+      </div>
+
+      <div class="right-actions">
+        <button type="button" mat-raised-button color="primary" (click)="probarConexion()"
+          [disabled]="configuracionForm.invalid || cargando || (esBibliotecaExterna() && !archivoSeleccionado)">
+          <mat-icon>wifi</mat-icon>
+          Probar Conexión
+        </button>
+
+        <button type="submit" mat-raised-button color="accent"
+          [disabled]="configuracionForm.invalid || cargando || (esBibliotecaExterna() && !archivoSeleccionado)">
+          <mat-icon>save</mat-icon>
+          Guardar Configuración
+        </button>
+      </div>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div class="loading-indicator" *ngIf="cargando">
+      <mat-spinner diameter="32"></mat-spinner>
+      <span>Procesando...</span>
+    </div>
+  </form>
+</div>
+

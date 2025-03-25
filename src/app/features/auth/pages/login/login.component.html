@@ -3,7 +3,63 @@
       <mat-card-header>
         <div class="login-header">
           <div class="logo-container">
-            <mat-icon color="primary" class="logo-icon">menu_book</mat-icon>
+            <!-- SVG Logo -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250" class="logo-svg">
+              <defs>
+                <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#3f51b5;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#7986cb;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Fondo circular -->
+              <circle cx="125" cy="125" r="110" fill="url(#bookGradient)" />
+              
+              <!-- Ícono de libro/menú abierto -->
+              <g transform="translate(125,125) scale(0.7)">
+                <!-- Base del libro/menú -->
+                <path 
+                  d="M-70,0 
+                     C-90,-40 -50,-80 -20,-80 
+                     L20,-80 
+                     C50,-80 90,-40 70,0 
+                     C50,40 -90,40 -70,0" 
+                  fill="white" 
+                  opacity="0.2"
+                />
+                
+                <!-- Líneas de menú/páginas -->
+                <line x1="-50" y1="-40" x2="50" y2="-40" stroke="white" stroke-width="5" />
+                <line x1="-50" y1="-20" x2="50" y2="-20" stroke="white" stroke-width="5" />
+                <line x1="-50" y1="0" x2="50" y2="0" stroke="white" stroke-width="5" />
+                <line x1="-50" y1="20" x2="50" y2="20" stroke="white" stroke-width="5" />
+              </g>
+              
+              <!-- Texto OPAC -->
+              <text 
+                x="125" 
+                y="210" 
+                text-anchor="middle" 
+                font-family="Arial, sans-serif" 
+                font-size="30" 
+                font-weight="bold" 
+                fill="white">
+                OPAC
+              </text>
+              
+              <!-- Identificadores Institucionales -->
+              <text 
+                x="125" 
+                y="50" 
+                text-anchor="middle" 
+                font-family="Arial, sans-serif" 
+                font-size="16" 
+                font-weight="lighter" 
+                fill="white" 
+                opacity="0.8">
+                CNC - UNA
+              </text>
+            </svg>
           </div>
           <h1>Catálogo OPAC</h1>
           <p class="subtitle">Sistema de Gestión Bibliotecaria</p>
