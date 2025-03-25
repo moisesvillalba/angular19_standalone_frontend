@@ -1,59 +1,91 @@
-# Opacfrontend
+#  Frontend - Online Public Access
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.3.
+## 📚 Project Description
+This is the frontend application for an Online Public Access system, built with Angular. The application provides a user-friendly interface for library management, user authentication, and catalog browsing.
 
-## Development server
+## 🚀 Features
+- User Authentication
+- Role-based Access Control
+- Library Catalog Management
+- Responsive Design
+- Secure Routes
+- Dynamic Configuration
 
-To start a local development server, run:
+## 🛠 Technologies Used
+- Angular
+- TypeScript
+- RxJS
+- Angular Material
+- Authentication Services
+- Environment Configuration
 
+## 📋 Prerequisites
+- Node.js (v18+ recommended)
+- npm (v9+)
+- Angular CLI
+
+## 🔧 Installation
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/opac-frontend.git
+cd opac-frontend
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Configure Environment
+Create or modify `src/environments/environment.ts` with your configuration:
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost',
+  // Add other configurations
+};
+```
+
+### 4. Run the Application
 ```bash
 ng serve
 ```
+Navigate to `http://localhost:4200/`
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+## 🧪 Running Tests
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
+## 🚢 Build for Production
 ```bash
-ng e2e
+ng build --configuration=production
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 📦 Project Structure
+```
+src/
+├── app/
+│   ├── core/           # Core services, guards, interceptors
+│   ├── features/       # Feature modules
+│   ├── shared/         # Shared components, pipes, directives
+│   └── environments/   # Environment configurations
+├── assets/             # Static assets
+└── styles/             # Global styles
+```
 
-## Additional Resources
+## 🔒 Authentication Policies
+- User registration can be enabled/disabled
+- Configurable password complexity rules
+- Role-based access control
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🤝 Contributing
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+```
